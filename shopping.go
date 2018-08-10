@@ -30,7 +30,7 @@ func showItems(w http.ResponseWriter,r *http.Request){
 func addItems(w http.ResponseWriter,r *http.Request){
 	w.Header().Set("Content-Type","application/json")
 	var tmp Items
-	_ = json.NewDecoder(r.Body).Decode(&tmp)
+	json.NewDecoder(r.Body).Decode(&tmp)
 	itemNo++;
 	tmp.ID = itemNo
 	items = append(items,tmp)
@@ -47,7 +47,7 @@ func updateItem(w http.ResponseWriter,r *http.Request) {
 			items = append(items[:idx] , items[idx + 1:]...)
 			w.Header().Set("Content-Type","application/json")
 			var tmp2 Items
-			_ = json.NewDecoder(r.Body).Decode(&tmp2)
+			json.NewDecoder(r.Body).Decode(&tmp2)
 			tmp2.ID = tmp.ID
 			if(tmp2.Name == "") {
 				tmp2.Name = tmp.Name
@@ -74,7 +74,7 @@ func deleteItem(w http.ResponseWriter,r *http.Request) {
 		var cnv string
 		cnv = strconv.Itoa(tmp.ID)
 		if(in["id"] == cnv){
-			items = append(items[:idx] , items[idx + 1:]...)
+			items = append(items[:idx], items[idx + 1:]...)
 			break
 		}
 	}
