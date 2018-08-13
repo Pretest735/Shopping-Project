@@ -50,7 +50,7 @@ func updateItem(w http.ResponseWriter,r *http.Request) {
 			json.NewDecoder(r.Body).Decode(&tmp2)
 			tmp2.ID = tmp.ID
 
-			//if the user wishes to edit 1 or 2 variables of an instead of 
+			//if the user wishes to edit 1 or 2 variables of an item instead of 
 			// all of them
 			
 			if(tmp2.Name == "") {
@@ -88,7 +88,9 @@ func deleteItem(w http.ResponseWriter,r *http.Request) {
 }
 
 func HomePage(w http.ResponseWriter,r *http.Request) {
-	w.Write([]byte("Welcome to the Shopping Server.\n"))
+	//w.Write([]byte("Welcome to the Shopping Server.\n"))
+	pr := "Welcome to the Shopping Server."
+	json.NewEncoder(w).Encode(pr)
 }
 
 func main() {
