@@ -15,8 +15,8 @@ type Items struct {
 	Price    int    `json: "price,omitempty"`
 	Quantity int    `json: "quantity,omitempty"`
 }
-type Response struct{
-	Ok	int `json : "ok"`
+type Response struct {
+	Ok      int    `json : "ok"`
 	Message string `json : "Message"`
 }
 
@@ -28,7 +28,7 @@ func showItems(w http.ResponseWriter, r *http.Request) {
 	err := json.NewEncoder(w).Encode(items)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(Response{Ok : 0, Message : "Failed to show Information."})
+		json.NewEncoder(w).Encode(Response{Ok: 0, Message: "Failed to show Information."})
 		return
 	}
 
@@ -41,7 +41,7 @@ func addItems(w http.ResponseWriter, r *http.Request) {
 	if err == nil {
 		if tmp.Name == "" || tmp.Price < 0 || tmp.Quantity < 0 {
 			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode(Response{Ok : 0, Message : "Invalid Information."})
+			json.NewEncoder(w).Encode(Response{Ok: 0, Message: "Invalid Information."})
 			return
 
 		}
@@ -51,12 +51,12 @@ func addItems(w http.ResponseWriter, r *http.Request) {
 		err = json.NewEncoder(w).Encode(tmp)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode(Response{Ok : 0, Message : "Failed to add item."})
+			json.NewEncoder(w).Encode(Response{Ok: 0, Message: "Failed to add item."})
 			return
 		}
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(Response{Ok : 0, Message : "Failed to process Request."})
+		json.NewEncoder(w).Encode(Response{Ok: 0, Message: "Failed to process Request."})
 		return
 	}
 }
@@ -80,34 +80,34 @@ func updateItem(w http.ResponseWriter, r *http.Request) {
 
 					if tmp2.Name == "" || tmp2.Price < 0 || tmp2.Quantity < 0 {
 						w.WriteHeader(http.StatusBadRequest)
-						json.NewEncoder(w).Encode(Response{Ok : 0, Message : "Invalid Information"})
+						json.NewEncoder(w).Encode(Response{Ok: 0, Message: "Invalid Information"})
 						return
-					}	
-					items = append(items, tmp2)		
+					}
+					items = append(items, tmp2)
 
 					break
 				} else {
 					w.WriteHeader(http.StatusBadRequest)
-					json.NewEncoder(w).Encode(Response{Ok : 0, Message : "Failed to receive update Information."})
+					json.NewEncoder(w).Encode(Response{Ok: 0, Message: "Failed to receive update Information."})
 					return
 				}
 			}
 		}
 		if sc == false {
 			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode(Response{Ok : 0, Message : "The given entry is not found."})
+			json.NewEncoder(w).Encode(Response{Ok: 0, Message: "The given entry is not found."})
 			return
 		}
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(Response{Ok : 0, Message : "Failed to process Request."})
+		json.NewEncoder(w).Encode(Response{Ok: 0, Message: "Failed to process Request."})
 		return
 	}
 
 	err = json.NewEncoder(w).Encode(items)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(Response{Ok : 0, Message : "Failed to update Information"})
+		json.NewEncoder(w).Encode(Response{Ok: 0, Message: "Failed to update Information"})
 		return
 	}
 
@@ -127,19 +127,19 @@ func deleteItem(w http.ResponseWriter, r *http.Request) {
 		}
 		if sc == false {
 			w.WriteHeader(http.StatusBadRequest)
-			json.NewEncoder(w).Encode(Response{Ok : 0, Message : "The given entry is not found."})
+			json.NewEncoder(w).Encode(Response{Ok: 0, Message: "The given entry is not found."})
 			return
 		}
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(Response{Ok : 0, Message : "Failed to process Request."})
+		json.NewEncoder(w).Encode(Response{Ok: 0, Message: "Failed to process Request."})
 		return
 	}
 
 	err = json.NewEncoder(w).Encode(items)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(Response{Ok : 0, Message : "Failed to delete items."})
+		json.NewEncoder(w).Encode(Response{Ok: 0, Message: "Failed to delete items."})
 		return
 	}
 
@@ -150,7 +150,7 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	err := json.NewEncoder(w).Encode(pr)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(Response{Ok : 0, Message : "Failed to process Request."})
+		json.NewEncoder(w).Encode(Response{Ok: 0, Message: "Failed to process Request."})
 		return
 	}
 }
