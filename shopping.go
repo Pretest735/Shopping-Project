@@ -80,7 +80,6 @@ func updateItem(w http.ResponseWriter, r *http.Request) {
 					}
 
 					items[idx] = tmp2
-
 					break
 				} else {
 					w.WriteHeader(http.StatusBadRequest)
