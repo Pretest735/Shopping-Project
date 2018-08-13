@@ -39,7 +39,7 @@ func addItems(w http.ResponseWriter, r *http.Request) {
 		if tmp.Name == "" || tmp.Price < 0 || tmp.Quantity < 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			return
-			
+
 		}
 		itemNo++
 		tmp.ID = itemNo
@@ -49,24 +49,24 @@ func addItems(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-	
+
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	
+
 }
 
 func updateItem(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	in := mux.Vars(r)
 
-	cnv , err := strconv.Atoi(in["id"])
+	cnv, err := strconv.Atoi(in["id"])
 
-	sz := items.size()
-	if err == nil{
+	
+	if err == nil {
 		for idx, tmp := range items {
-			
+
 			if tmp.ID == cnv {
 				items = append(items[:idx], items[idx+1:]...)
 				w.Header().Set("Content-Type", "application/json")
@@ -93,22 +93,20 @@ func updateItem(w http.ResponseWriter, r *http.Request) {
 						w.WriteHeader(http.StatusBadRequest)
 					}
 					break
-				} else{
+				} else {
 					w.WriteHeader(http.StatusBadRequest)
 					return
 				}
-				
+
 			}
 		}
-		if idx >= sz {
-			w.WriteHeader(http.StatusBadRequest)
-		}
+		
 
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
-	
+
 	err = json.NewEncoder(w).Encode(items)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -119,9 +117,9 @@ func updateItem(w http.ResponseWriter, r *http.Request) {
 func deleteItem(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	in := mux.Vars(r)
-	cnv , err := strconv.Atoi(in["id"])
+	cnv, err := strconv.Atoi(in["id"])
 	if err == nil {
-		for idx, tmp := range items {	
+		for idx, tmp := range items {
 			if tmp.ID == cnv {
 				items = append(items[:idx], items[idx+1:]...)
 				break
@@ -130,7 +128,7 @@ func deleteItem(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
 	}
-	
+
 	err = json.NewEncoder(w).Encode(items)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -142,7 +140,7 @@ func deleteItem(w http.ResponseWriter, r *http.Request) {
 func HomePage(w http.ResponseWriter, r *http.Request) {
 	pr := "Welcome to the Shopping Server."
 	err := json.NewEncoder(w).Encode(pr)
-	if err != nil{
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 	}
 }
