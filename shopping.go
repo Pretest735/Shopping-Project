@@ -88,7 +88,6 @@ func deleteItem(w http.ResponseWriter,r *http.Request) {
 }
 
 func HomePage(w http.ResponseWriter,r *http.Request) {
-	//w.Write([]byte("Welcome to the Shopping Server.\n"))
 	pr := "Welcome to the Shopping Server."
 	json.NewEncoder(w).Encode(pr)
 }
