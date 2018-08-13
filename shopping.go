@@ -13,7 +13,7 @@ import(
 type Items struct{
 	ID 			int 		`json: "id"`
 	Name 		string 		`json: "name"`
-	Price		int		`json: "price"`
+	Price		int			`json: "price"`
 	Quantity 	int			`json: "quantity"`
 
 }
@@ -49,6 +49,10 @@ func updateItem(w http.ResponseWriter,r *http.Request) {
 			var tmp2 Items
 			json.NewDecoder(r.Body).Decode(&tmp2)
 			tmp2.ID = tmp.ID
+
+			//if the user wishes to edit 1 or 2 variables of an instead of 
+			// all of them
+			
 			if(tmp2.Name == "") {
 				tmp2.Name = tmp.Name
 			}
