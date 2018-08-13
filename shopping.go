@@ -10,10 +10,10 @@ import (
 )
 
 type Items struct {
-	ID       int    `json: "id"`
-	Name     string `json: "name"`
-	Price    int    `json: "price"`
-	Quantity int    `json: "quantity"`
+	ID       int    `json: "id,omitempty"`
+	Name     string `json: "name,omitempty"`
+	Price    int    `json: "price,omitempty"`
+	Quantity int    `json: "quantity,omitempty"`
 }
 
 var items []Items
@@ -24,6 +24,7 @@ func showItems(w http.ResponseWriter, r *http.Request) {
 	err := json.NewEncoder(w).Encode(items)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode("Failed to show Information.")
 		return
 	}
 
@@ -33,11 +34,10 @@ func addItems(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var tmp Items
 	err := json.NewDecoder(r.Body).Decode(&tmp)
-	//sc := "Success"
-	//fl := "Failure"
 	if err == nil {
 		if tmp.Name == "" || tmp.Price < 0 || tmp.Quantity < 0 {
 			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode("Invalid Information")
 			return
 
 		}
@@ -47,14 +47,14 @@ func addItems(w http.ResponseWriter, r *http.Request) {
 		err = json.NewEncoder(w).Encode(tmp)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode("Failed to add item.")
 			return
 		}
-
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode("Failed to process Request.")
 		return
 	}
-
 }
 
 func updateItem(w http.ResponseWriter, r *http.Request) {
@@ -63,10 +63,8 @@ func updateItem(w http.ResponseWriter, r *http.Request) {
 
 	cnv, err := strconv.Atoi(in["id"])
 
-	
 	if err == nil {
 		for idx, tmp := range items {
-
 			if tmp.ID == cnv {
 				items = append(items[:idx], items[idx+1:]...)
 				w.Header().Set("Content-Type", "application/json")
@@ -75,41 +73,30 @@ func updateItem(w http.ResponseWriter, r *http.Request) {
 				if err == nil {
 					tmp2.ID = tmp.ID
 
-					//if the user wishes to edit 1 or 2 variables of an item instead of
-					// all of them
-
-					if tmp2.Name == "" {
-						tmp2.Name = tmp.Name
-					}
-					if tmp2.Price < 0 {
-						tmp2.Price = tmp.Price
-					}
-					if tmp2.Quantity < 0 {
-						tmp2.Quantity = tmp.Quantity
-					}
-					items = append(items, tmp2)
-					err = json.NewEncoder(w).Encode(tmp2)
-					if err != nil {
+					if tmp2.Name == "" || tmp2.Price < 0 || tmp2.Quantity < 0 {
 						w.WriteHeader(http.StatusBadRequest)
-					}
+						json.NewEncoder(w).Encode("Invalid Information")
+						return
+					}	
+					items = append(items, tmp2)				
 					break
 				} else {
 					w.WriteHeader(http.StatusBadRequest)
+					json.NewEncoder(w).Encode("Failed to receive update Information.")
 					return
 				}
-
 			}
 		}
-		
-
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode("Failed to process Request.")
 		return
 	}
 
 	err = json.NewEncoder(w).Encode(items)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode("Failed to update Information")
 		return
 	}
 
@@ -127,11 +114,14 @@ func deleteItem(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode("Failed to process Request.")
+		return
 	}
 
 	err = json.NewEncoder(w).Encode(items)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode("Failed to delete items.")
 		return
 	}
 
@@ -142,6 +132,8 @@ func HomePage(w http.ResponseWriter, r *http.Request) {
 	err := json.NewEncoder(w).Encode(pr)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode("Failed to process Request.")
+		return
 	}
 }
 
