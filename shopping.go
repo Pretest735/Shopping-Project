@@ -37,7 +37,7 @@ func addItems(w http.ResponseWriter, r *http.Request) {
 	var tmp Items
 	err := json.NewDecoder(r.Body).Decode(&tmp)
 	if err == nil {
-		if tmp.Name == "" || tmp.Price < 0 || tmp.Quantity < 0 {
+		if tmp.Name == "" || tmp.Price <= 0 || tmp.Quantity <= 0 {
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(Response{Ok: 0, Message: "Invalid Information."})
 			return
@@ -73,14 +73,14 @@ func updateItem(w http.ResponseWriter, r *http.Request) {
 				if err == nil {
 					tmp2.ID = tmp.ID
 
-					if tmp2.Name == "" || tmp2.Price < 0 || tmp2.Quantity < 0 {
+					if tmp2.Name == "" || tmp2.Price <= 0 || tmp2.Quantity <= 0 {
 						w.WriteHeader(http.StatusBadRequest)
 						json.NewEncoder(w).Encode(Response{Ok: 0, Message: "Invalid Information"})
 						return
 					}
 
 					items[idx] = tmp2
-					json.NewEncoder(w).Encode(Response{Ok: 0, Message: "Succesfully updated Information."})
+
 					break
 				} else {
 					w.WriteHeader(http.StatusBadRequest)
