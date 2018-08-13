@@ -1,109 +1,163 @@
 package main
 
-import(
+import (
 	//"fmt"
 	//"log"
-	"net/http"
-	"github.com/gorilla/mux"
 	"encoding/json"
+	"github.com/gorilla/mux"
+	"net/http"
 	"strconv"
 )
 
-
-type Items struct{
-	ID 			int 		`json: "id"`
-	Name 		string 		`json: "name"`
-	Price		int			`json: "price"`
-	Quantity 	int			`json: "quantity"`
-
+type Items struct {
+	ID       int    `json: "id"`
+	Name     string `json: "name"`
+	Price    int    `json: "price"`
+	Quantity int    `json: "quantity"`
 }
 
 var items []Items
-var itemNo int = 0
+var itemNo int = 2
 
-func showItems(w http.ResponseWriter,r *http.Request){
-	w.Header().Set("Content-Type","application/json")
-	json.NewEncoder(w).Encode(items)
-	
+func showItems(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	err := json.NewEncoder(w).Encode(items)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 }
 
-func addItems(w http.ResponseWriter,r *http.Request){
-	w.Header().Set("Content-Type","application/json")
+func addItems(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	var tmp Items
-	json.NewDecoder(r.Body).Decode(&tmp)
-	itemNo++;
-	tmp.ID = itemNo
-	items = append(items,tmp)
-	json.NewEncoder(w).Encode(tmp)
-
-}
-func updateItem(w http.ResponseWriter,r *http.Request) {
-	w.Header().Set("Content-Type","application/json")
-	in := mux.Vars(r)
-	for idx, tmp := range items{
-		var cnv string
-		cnv = strconv.Itoa(tmp.ID)
-		if(in["id"] == cnv){
-			items = append(items[:idx] , items[idx + 1:]...)
-			w.Header().Set("Content-Type","application/json")
-			var tmp2 Items
-			json.NewDecoder(r.Body).Decode(&tmp2)
-			tmp2.ID = tmp.ID
-
-			//if the user wishes to edit 1 or 2 variables of an item instead of 
-			// all of them
+	err := json.NewDecoder(r.Body).Decode(&tmp)
+	//sc := "Success"
+	//fl := "Failure"
+	if err == nil {
+		if tmp.Name == "" || tmp.Price < 0 || tmp.Quantity < 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			return
 			
-			if(tmp2.Name == "") {
-				tmp2.Name = tmp.Name
-			}
-			if(tmp2.Price == 0){
-				tmp2.Price = tmp.Price;
-			}
-			if(tmp2.Quantity == 0){
-				tmp2.Quantity = tmp.Quantity
-			}
-			items = append(items,tmp2)
-			json.NewEncoder(w).Encode(tmp2)
+		}
+		itemNo++
+		tmp.ID = itemNo
+		items = append(items, tmp)
+		err = json.NewEncoder(w).Encode(tmp)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-	}
-	json.NewEncoder(w).Encode(items)
 	
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	
 }
-func deleteItem(w http.ResponseWriter,r *http.Request) {
-	w.Header().Set("Content-Type","application/json")
+
+func updateItem(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	in := mux.Vars(r)
-	for idx, tmp := range items{
-		var cnv string
-		cnv = strconv.Itoa(tmp.ID)
-		if(in["id"] == cnv){
-			items = append(items[:idx], items[idx + 1:]...)
-			break
-		}
-	}
-	json.NewEncoder(w).Encode(items)
 
+	cnv , err := strconv.Atoi(in["id"])
+
+	sz := items.size()
+	if err == nil{
+		for idx, tmp := range items {
+			
+			if tmp.ID == cnv {
+				items = append(items[:idx], items[idx+1:]...)
+				w.Header().Set("Content-Type", "application/json")
+				var tmp2 Items
+				err = json.NewDecoder(r.Body).Decode(&tmp2)
+				if err == nil {
+					tmp2.ID = tmp.ID
+
+					//if the user wishes to edit 1 or 2 variables of an item instead of
+					// all of them
+
+					if tmp2.Name == "" {
+						tmp2.Name = tmp.Name
+					}
+					if tmp2.Price < 0 {
+						tmp2.Price = tmp.Price
+					}
+					if tmp2.Quantity < 0 {
+						tmp2.Quantity = tmp.Quantity
+					}
+					items = append(items, tmp2)
+					err = json.NewEncoder(w).Encode(tmp2)
+					if err != nil {
+						w.WriteHeader(http.StatusBadRequest)
+					}
+					break
+				} else{
+					w.WriteHeader(http.StatusBadRequest)
+					return
+				}
+				
+			}
+		}
+		if idx >= sz {
+			w.WriteHeader(http.StatusBadRequest)
+		}
+
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
 	
+	err = json.NewEncoder(w).Encode(items)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+}
+func deleteItem(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	in := mux.Vars(r)
+	cnv , err := strconv.Atoi(in["id"])
+	if err == nil {
+		for idx, tmp := range items {	
+			if tmp.ID == cnv {
+				items = append(items[:idx], items[idx+1:]...)
+				break
+			}
+		}
+	} else {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+	
+	err = json.NewEncoder(w).Encode(items)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
 }
 
-func HomePage(w http.ResponseWriter,r *http.Request) {
+func HomePage(w http.ResponseWriter, r *http.Request) {
 	pr := "Welcome to the Shopping Server."
-	json.NewEncoder(w).Encode(pr)
+	err := json.NewEncoder(w).Encode(pr)
+	if err != nil{
+		w.WriteHeader(http.StatusBadRequest)
+	}
 }
 
 func main() {
 	mx := mux.NewRouter()
-	
-	items = append(items,Items{ID: 1 , Name : "Shirt" , Price: 1150 , Quantity: 2})
-	items = append(items,Items{ID: 2 , Name : "Pant" , Price: 1250 , Quantity: 2})
 
-	mx.HandleFunc("/",HomePage)
-	mx.HandleFunc("/shop/items",showItems).Methods("GET")
-	mx.HandleFunc("/shop/items",addItems).Methods("POST")
-	mx.HandleFunc("/shop/items/{id}",updateItem).Methods("PUT")
-	mx.HandleFunc("/shop/items/{id}",deleteItem).Methods("DELETE")
+	items = append(items, Items{ID: 1, Name: "Shirt", Price: 1150, Quantity: 2})
+	items = append(items, Items{ID: 2, Name: "Pant", Price: 1250, Quantity: 2})
 
-	http.ListenAndServe(":8080",mx)
+	mx.HandleFunc("/shop", HomePage)
+	mx.HandleFunc("/shop/items", showItems).Methods("GET")
+	mx.HandleFunc("/shop/items", addItems).Methods("POST")
+	mx.HandleFunc("/shop/items/{id}", updateItem).Methods("PUT")
+	mx.HandleFunc("/shop/items/{id}", deleteItem).Methods("DELETE")
+
+	http.ListenAndServe(":8080", mx)
 }
-
