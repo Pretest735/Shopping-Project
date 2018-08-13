@@ -24,7 +24,6 @@ var items []Items
 var itemNo int = 2
 
 func showItems(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	err := json.NewEncoder(w).Encode(items)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -35,7 +34,6 @@ func showItems(w http.ResponseWriter, r *http.Request) {
 }
 
 func addItems(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	var tmp Items
 	err := json.NewDecoder(r.Body).Decode(&tmp)
 	if err == nil {
@@ -62,17 +60,14 @@ func addItems(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateItem(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	in := mux.Vars(r)
-
 	cnv, err := strconv.Atoi(in["id"])
 	var sc bool = false
 	if err == nil {
 		for idx, tmp := range items {
 			if tmp.ID == cnv {
 				sc = true
-				items = append(items[:idx], items[idx+1:]...)
-				w.Header().Set("Content-Type", "application/json")
+
 				var tmp2 Items
 				err = json.NewDecoder(r.Body).Decode(&tmp2)
 				if err == nil {
@@ -83,8 +78,9 @@ func updateItem(w http.ResponseWriter, r *http.Request) {
 						json.NewEncoder(w).Encode(Response{Ok: 0, Message: "Invalid Information"})
 						return
 					}
-					items = append(items, tmp2)
 
+					items[idx] = tmp2
+					json.NewEncoder(w).Encode(Response{Ok: 0, Message: "Succesfully updated Information."})
 					break
 				} else {
 					w.WriteHeader(http.StatusBadRequest)
@@ -113,7 +109,7 @@ func updateItem(w http.ResponseWriter, r *http.Request) {
 
 }
 func deleteItem(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+
 	in := mux.Vars(r)
 	var sc bool = false
 	cnv, err := strconv.Atoi(in["id"])
