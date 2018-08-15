@@ -24,6 +24,7 @@ var items []Items
 var itemNo int = 2
 
 func showItems(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type","application/json")
 	err := json.NewEncoder(w).Encode(items)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -34,6 +35,7 @@ func showItems(w http.ResponseWriter, r *http.Request) {
 }
 
 func addItems(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type","application/json")
 	var tmp Items
 	err := json.NewDecoder(r.Body).Decode(&tmp)
 	if err == nil {
@@ -60,6 +62,7 @@ func addItems(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateItem(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("content-type","application/json")
 	in := mux.Vars(r)
 	cnv, err := strconv.Atoi(in["id"])
 	var sc bool = false
@@ -108,7 +111,7 @@ func updateItem(w http.ResponseWriter, r *http.Request) {
 
 }
 func deleteItem(w http.ResponseWriter, r *http.Request) {
-
+	w.Header().Set("content-type","application/json")
 	in := mux.Vars(r)
 	var sc bool = false
 	cnv, err := strconv.Atoi(in["id"])
@@ -141,7 +144,8 @@ func deleteItem(w http.ResponseWriter, r *http.Request) {
 }
 
 func HomePage(w http.ResponseWriter, r *http.Request) {
-	pr := "Welcome to the Shopping Server."
+	w.Header().Set("content-type","application/json")
+	pr := "Welcome to the server"
 	err := json.NewEncoder(w).Encode(pr)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
